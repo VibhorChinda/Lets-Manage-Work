@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Lets Manage Work</string>
+    <string name="perform_work_title">Perform Work</string>
 </resources>
