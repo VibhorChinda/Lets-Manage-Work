@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
@@ -14,8 +15,24 @@ class MyWorker(context: Context, workerParameters: WorkerParameters) : Worker(co
 
     // Primary function
     override fun doWork(): Result {
-        displayNotification("Hey i am Vibhor Chinda.", "What is your name.")
-        return Result.success()
+
+        // Receiving input data
+        val data: Data = inputData
+        val title: String? = data.getString("Title")
+        val desc: String? = data.getString("Description")
+
+        // Performing Work
+        if (desc != null && title !=null) {
+                displayNotification(title, desc)
+        }
+
+        // Defining Output Data
+        val outputData: Data = Data.Builder()
+            .putString("Success", "Work is completed")
+            .build()
+
+        // Returning Output Data
+        return Result.success(outputData)
     }
 
     private fun displayNotification(task: String, desc: String) {

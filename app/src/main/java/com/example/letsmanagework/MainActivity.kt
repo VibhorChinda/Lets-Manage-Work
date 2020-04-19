@@ -3,6 +3,7 @@ package com.example.letsmanagework
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -13,8 +14,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val data: Data = Data.Builder()
+            .putString("Title", "This is the Input Title")
+            .putString("Description", "This is the Input Description")
+            .build()
+
         // Creating a work request
-        val request: OneTimeWorkRequest = OneTimeWorkRequest.Builder(MyWorker :: class.java).build()
+        val request: OneTimeWorkRequest = OneTimeWorkRequest.Builder(MyWorker :: class.java)
+            .setInputData(data)
+            .build()
 
         work_button.setOnClickListener {
 
@@ -24,7 +32,11 @@ class MainActivity : AppCompatActivity() {
 
         // Observing Work Info using Work Manager and Live data
         WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(request.id).observe(this, Observer {
-            work_info_text_view.text =  work_info_text_view.text.toString() + it.toString()
+
+            // Receiving Output Data
+            if(it.state.isFinished) {
+                work_info_text_view.text =  it.outputData.getString("Success")
+            }
         })
     }
 }
